@@ -17,6 +17,7 @@ package com.lmax.disruptor;
 
 /**
  * Coordinates claiming sequences for access to a data structure while tracking dependent {@link Sequence}s
+ * 序号管理器，生产同步的实现者，负责消费者/生产者各自序号、序号栅栏的管理和协调,Sequencer有单生产者,多生产者两种不同的模式,里面实现了各种同步的算法；
  */
 public interface Sequencer extends Cursored, Sequenced
 {

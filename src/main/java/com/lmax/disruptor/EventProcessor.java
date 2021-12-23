@@ -20,7 +20,7 @@ package com.lmax.disruptor;
  * using the appropriate wait strategy.  It is unlikely that you will need to implement this interface yourself.
  * Look at using the {@link EventHandler} interface along with the pre-supplied BatchEventProcessor in the first
  * instance.
- *
+ * 事件处理器，监听RingBuffer的事件，并消费可用事件，从RingBuffer读取的事件会交由实际的生产者实现类来消费；它会一直侦听下一个可用的序号，直到该序号对应的事件已经准备好。
  * <p>An EventProcessor will generally be associated with a Thread for execution.
  */
 public interface EventProcessor extends Runnable

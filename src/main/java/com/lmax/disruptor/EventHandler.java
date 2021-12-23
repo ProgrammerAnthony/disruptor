@@ -17,7 +17,7 @@ package com.lmax.disruptor;
 
 /**
  * Callback interface to be implemented for processing events as they become available in the {@link RingBuffer}
- *
+ * 事件消费者当RingBuffer中的事件可用时候的回调
  * @param <T> event implementation storing the data for sharing during exchange or parallel coordination of an event.
  * @see BatchEventProcessor#setExceptionHandler(ExceptionHandler) if you want to handle exceptions propagated out of the handler.
  */

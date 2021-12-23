@@ -11,7 +11,7 @@ public interface EventSink<E>
      * claiming the next sequence, getting the current (uninitialised)
      * event from the ring buffer and publishing the claimed sequence
      * after translation.
-     *
+     * 发布事件
      * @param translator The user specified translation for the event
      */
     void publishEvent(EventTranslator<E> translator);
@@ -41,7 +41,7 @@ public interface EventSink<E>
 
     /**
      * Allows one user supplied argument.
-     *
+     * 发布事件，成功返回true
      * @param <A> Class of the user supplied argument
      * @param translator The user specified translation for the event
      * @param arg0       A user supplied argument.
@@ -165,7 +165,7 @@ public interface EventSink<E>
      * event from the ring buffer and publishing the claimed sequence
      * after translation.  Will return false if specified capacity
      * was not available.
-     *
+     * 发送批量时间上到ring buffer
      * @param translators The user specified translation for the event
      * @return true if the value was published, false if there was insufficient
      * capacity.

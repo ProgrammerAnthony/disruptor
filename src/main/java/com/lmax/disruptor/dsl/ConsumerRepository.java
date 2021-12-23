@@ -30,7 +30,7 @@ import java.util.Map;
 
 /**
  * Provides a repository mechanism to associate {@link EventHandler}s with {@link EventProcessor}s
- *
+ * 关联EventHandler和EventProcessor
  * @param <T> the type of the {@link EventHandler}
  */
 class ConsumerRepository<T> implements Iterable<ConsumerInfo>

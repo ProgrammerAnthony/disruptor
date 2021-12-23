@@ -76,6 +76,8 @@ public abstract class AbstractSequencer implements Sequencer
 
     /**
      * @see Sequencer#addGatingSequences(Sequence...)
+     * 在构建RingBuffer注册处理类的时候，就将消费者Sequense注册到RingBuffer中了。
+     * 用于注入gatingSequence
      */
     @Override
     public final void addGatingSequences(final Sequence... gatingSequences)

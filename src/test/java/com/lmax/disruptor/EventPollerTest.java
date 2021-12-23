@@ -16,7 +16,14 @@ public class EventPollerTest
     {
         final Sequence gatingSequence = new Sequence();
         final SingleProducerSequencer sequencer = new SingleProducerSequencer(16, new BusySpinWaitStrategy());
-        final EventPoller.Handler<Object> handler = (event, sequence, endOfBatch) -> false;
+        final EventPoller.Handler<Object> handler = new EventPoller.Handler<Object>()
+        {
+            @Override
+            public boolean onEvent(final Object event, final long sequence, final boolean endOfBatch) throws Exception
+            {
+                return false;
+            }
+        };
 
         final Object[] data = new Object[16];
         final DataProvider<Object> provider = sequence -> data[(int) sequence];

@@ -53,8 +53,9 @@ public final class MultiProducerSequencer extends AbstractSequencer
     {
         super(bufferSize, waitStrategy);
         availableBuffer = new int[bufferSize];
+        //数组每个位置都写为-1
         Arrays.fill(availableBuffer, -1);
-
+        //掩码为bufferSize-1
         indexMask = bufferSize - 1;
         indexShift = Util.log2(bufferSize);
     }
@@ -116,17 +117,17 @@ public final class MultiProducerSequencer extends AbstractSequencer
             throw new IllegalArgumentException("n must be > 0 and < bufferSize");
         }
 
-        long current = cursor.getAndAdd(n);
+        long current = cursor.getAndAdd(n);//当前RingBuffer的游标，即生产者的位置指针
 
         long nextSequence = current + n;
-        long wrapPoint = nextSequence - bufferSize;
-        long cachedGatingSequence = gatingSequenceCache.get();
-
+        long wrapPoint = nextSequence - bufferSize; //减掉一圈
+        long cachedGatingSequence = gatingSequenceCache.get(); //上一次缓存的最小的消费者指针
+        //wrapPoint > cachedGatingSequence：生产者指针的位置超过当前消费最小的指针
         if (wrapPoint > cachedGatingSequence || cachedGatingSequence > current)
         {
             long gatingSequence;
             while (wrapPoint > (gatingSequence = Util.getMinimumSequence(gatingSequences, current)))
-            {
+            { //等待
                 LockSupport.parkNanos(1L); // TODO, should we spin based on the wait strategy?
             }
 

@@ -37,9 +37,11 @@ class RhsPadding extends Value
  * Concurrent sequence class used for tracking the progress of
  * the ring buffer and event processors.  Support a number
  * of concurrent operations including CAS and order writes.
- *
+ * 用于追踪ring buffer进度和事件处理器，支持CAS的并发操作和顺序写，RhsPadding缓存行填充,通过VarHandle保证内存屏障，读写的原子性
  * <p>Also attempts to be more efficient with regards to false
  * sharing by adding padding around the volatile field.
+ *
+ * 序号，声明一个序号，用于跟踪ringbuffer中任务的变化和消费者的消费情况，disruptor里面大部分的并发代码都是通过对Sequence的值同步修改实现的,而非锁,这是disruptor高性能的一个主要原因；
  */
 public class Sequence extends RhsPadding
 {
@@ -86,6 +88,7 @@ public class Sequence extends RhsPadding
     public long get()
     {
         long value = this.value;
+        //确保原子性Ensures that loads before the fence will not be reordered with loads and stores after the fence.
         VarHandle.acquireFence();
         return value;
     }
@@ -98,7 +101,7 @@ public class Sequence extends RhsPadding
      * @param value The new value for the sequence.
      */
     public void set(final long value)
-    {
+    { //确保原子性 Ensures that loads and stores before the fence will not be reordered with stores after the fence.
         VarHandle.releaseFence();
         this.value = value;
     }

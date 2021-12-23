@@ -112,7 +112,7 @@ public class Disruptor<T>
      * <p>This method can be used as the start of a chain. For example if the handler <code>A</code> must
      * process events before handler <code>B</code>:</p>
      * <pre><code>dw.handleEventsWith(A).then(B);</code></pre>
-     *
+     * 链式调用，dw.handleEventsWith(A).then(B);
      * <p>This call is additive, but generally should only be called once when setting up the Disruptor instance</p>
      *
      * @param handlers the event handlers that will process events.
@@ -335,8 +335,9 @@ public class Disruptor<T>
      * @return the configured ring buffer.
      */
     public RingBuffer<T> start()
-    {
+    {   //AtomicBoolean检查只启动一次
         checkOnlyStartedOnce();
+        //消费者启动
         for (final ConsumerInfo consumerInfo : consumerRepository)
         {
             consumerInfo.start(threadFactory);
@@ -346,6 +347,7 @@ public class Disruptor<T>
     }
 
     /**
+     * 实际调用EventProcessor#halt()，会signal其他等待的线程
      * Calls {@link com.lmax.disruptor.EventProcessor#halt()} on all of the event processors created via this disruptor.
      */
     public void halt()
@@ -382,7 +384,7 @@ public class Disruptor<T>
      *
      * <p>This method will not shutdown the executor, nor will it await the final termination of the
      * processor threads.</p>
-     *
+     *  halt方法实际调用EventProcessor#halt()，会signal其他等待的线程
      * @param timeout  the amount of time to wait for all events to be processed. <code>-1</code> will give an infinite timeout
      * @param timeUnit the unit the timeOut is specified in
      * @throws TimeoutException if a timeout occurs before shutdown completes.
@@ -491,9 +493,9 @@ public class Disruptor<T>
     EventHandlerGroup<T> createEventProcessors(
         final Sequence[] barrierSequences,
         final EventHandler<? super T>[] eventHandlers)
-    {
+    {   //EventHandler事件消费者需要在调用start方法的时候初始化
         checkNotStarted();
-
+        //创建对应的Sequence
         final Sequence[] processorSequences = new Sequence[eventHandlers.length];
         final SequenceBarrier barrier = ringBuffer.newBarrier(barrierSequences);
 

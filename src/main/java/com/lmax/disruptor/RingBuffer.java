@@ -58,13 +58,14 @@ abstract class RingBufferFields<E> extends RingBufferPad
 
         this.indexMask = bufferSize - 1;
         this.entries = (E[]) new Object[sequencer.getBufferSize() + 2 * BUFFER_PAD];
+        //填充
         fill(eventFactory);
     }
 
     private void fill(final EventFactory<E> eventFactory)
     {
         for (int i = 0; i < bufferSize; i++)
-        {
+        {   //构建事件，预先填充
             entries[BUFFER_PAD + i] = eventFactory.newInstance();
         }
     }
@@ -78,7 +79,7 @@ abstract class RingBufferFields<E> extends RingBufferPad
 /**
  * Ring based store of reusable entries containing the data representing
  * an event being exchanged between event producer and {@link EventProcessor}s.
- *
+ * Disruptor底层数据结构实现，核心类，是线程间交换数据的中转地；复用内存，减少分配新空间带来的时间和空间损耗
  * @param <E> implementation storing the data for sharing during exchange or parallel coordination of an event.
  */
 public final class RingBuffer<E> extends RingBufferFields<E> implements Cursored, EventSequencer<E>, EventSink<E>
@@ -112,7 +113,7 @@ public final class RingBuffer<E> extends RingBufferFields<E> implements Cursored
 
     /**
      * Create a new multiple producer RingBuffer with the specified wait strategy.
-     *
+     * Wait Strategy决定了一个消费者怎么等待生产者将事件（Event）放入Disruptor中。默认是BlockingWaitStrategy
      * @param <E> Class of the event stored in the ring buffer.
      * @param factory      used to create the events within the ring buffer.
      * @param bufferSize   number of elements to create within the ring buffer.
@@ -143,12 +144,13 @@ public final class RingBuffer<E> extends RingBufferFields<E> implements Cursored
      */
     public static <E> RingBuffer<E> createMultiProducer(final EventFactory<E> factory, final int bufferSize)
     {
+        //默认是BlockingWaitStrategy
         return createMultiProducer(factory, bufferSize, new BlockingWaitStrategy());
     }
 
     /**
      * Create a new single producer RingBuffer with the specified wait strategy.
-     *
+     * 创建单生产者
      * @param <E> Class of the event stored in the ring buffer.
      * @param factory      used to create the events within the ring buffer.
      * @param bufferSize   number of elements to create within the ring buffer.
@@ -585,7 +587,9 @@ public final class RingBuffer<E> extends RingBufferFields<E> implements Cursored
     @Override
     public void publishEvent(final EventTranslatorVararg<E> translator, final Object... args)
     {
+        //1 先通过原子操作，得到一个可用的序号
         final long sequence = sequencer.next();
+        //2.将该序号对应位置的元素进行转换，接着发布
         translateAndPublish(translator, sequence, args);
     }
 

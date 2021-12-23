@@ -51,7 +51,7 @@ public final class Util
 
     /**
      * Get the minimum sequence from an array of {@link com.lmax.disruptor.Sequence}s.
-     *
+     * 从Sequences中获取最小的消费序号
      * @param sequences to compare.
      * @param minimum   an initial default minimum.  If the array is empty this value will be
      *                  returned.
